@@ -1,0 +1,8 @@
+a2ms-api:
+  image: endaaman/a2ms-api
+  container_name: a2ms-api
+  environment:
+    SECRET_KEY_BASE: "${SECRET_KEY_BASE}"
+    DB_HOST: "172.17.0.1"
+  volumes:
+    - /var/shared/a2ms:/var/shared/a2ms

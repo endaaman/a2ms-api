@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+if ARGV.size < 2
+  puts 'Please specify 2 arg at least'
+  exit 1
+end
+
+path = ARGV[0]
+command = ARGV[1].to_sym
+
+case command
+when :admin then
+when :approved then
+else
+  puts 'available command: `admin` or `approve`'
+  exit 1
+end
+
+user = User.where('id = ? or username = ?', path, path).first
+
+if not user
+  puts "not found user who has `#{path}` in id or username"
+  exit 1
+end
+
+flag = (not ARGV[2] or ARGV[2] != 'false') ? true : false
+
+user.update command => flag
+user.save!
+puts "Approved #{user.username}(id:#{user.id})"
