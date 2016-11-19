@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+if ARGV.size < 1
+  puts 'Please specify 1 arg at least'
+  exit 1
+end
+
+path = ARGV[0]
+
+if not File.exist?(path)
+  puts "#{path} does not exist"
+  exit 1
+end
+
+jsonFile = File.open(path).read
+aa = JSON.load(jsonFile) rescue nil
+
+if not aa
+  puts "#{path} is not json"
+  exit 1
+end
+
+Article.destroy_all
+
+for a in aa
+  a = Article.new(
+    slug: a['slug'],
+    draft: a['draft'],
+    order: a['order'],
+    title_en: a['title_en'],
+    title_ja: a['title_ja'],
+    image_url: a['image_url'] || '',
+    content_en: a['content_en'],
+    content_ja: a['content_ja'],
+    comment: a['comment'],
+    category_id: nil,
+    updated_at: a['updated_at'] && Time.parse(a['updated_at']['$date']).to_time.to_s(:db),
+    created_at: a['created_at'] && Time.parse(a['created_at']['$date']).to_time.to_s(:db)
+  )
+  a.save!
+end

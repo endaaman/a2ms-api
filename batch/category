@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+
+if ARGV.size < 1
+  puts 'Please specify 1 arg at least'
+  exit 1
+end
+
+path = ARGV[0]
+
+if not File.exist?(path)
+  puts "#{path} does not exist"
+  exit 1
+end
+
+jsonFile = File.open(path).read
+cats = JSON.load(jsonFile) rescue nil
+
+if not cats
+  puts "#{path} is not json"
+  exit 1
+end
+
+Category.destroy_all
+
+for c in cats
+  c = Category.new(
+    slug: c['slug'],
+    order: c['order'],
+    name_en: c['name_en'],
+    name_ja: c['name_ja'],
+    image_url: c['image_url'] || '',
+    desc_en: c['desc_en'],
+    desc_ja: c['desc_ja'],
+    updated_at: c['updated_at'] && Time.parse(c['updated_at']['$date']).to_time.to_s(:db),
+    created_at: c['created_at'] && Time.parse(c['created_at']['$date']).to_time.to_s(:db)
+  )
+  c.save!
+end
